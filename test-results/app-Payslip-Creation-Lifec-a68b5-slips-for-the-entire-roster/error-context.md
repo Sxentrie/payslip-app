@@ -1,0 +1,176 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - heading "PaySlip" [level=1] [ref=e7]
+        - img "App Icon" [ref=e8]
+      - button [ref=e9]:
+        - img
+    - navigation [ref=e10]:
+      - link "Dashboard" [ref=e11] [cursor=pointer]:
+        - /url: "#/"
+        - img [ref=e12]
+        - generic [ref=e17]: Dashboard
+      - link "New Payslip" [ref=e18] [cursor=pointer]:
+        - /url: "#/new-payslip"
+        - img [ref=e19]
+        - generic [ref=e22]: New Payslip
+      - link "Payslip Log" [ref=e23] [cursor=pointer]:
+        - /url: "#/payslip-log"
+        - img [ref=e24]
+        - generic [ref=e27]: Payslip Log
+      - link "Employees" [ref=e28] [cursor=pointer]:
+        - /url: "#/employees"
+        - img [ref=e29]
+        - generic [ref=e34]: Employees
+      - link "Branches" [ref=e35] [cursor=pointer]:
+        - /url: "#/branches"
+        - img [ref=e36]
+        - generic [ref=e40]: Branches
+      - link "Print Preview" [ref=e41] [cursor=pointer]:
+        - /url: "#/print-preview"
+        - img [ref=e42]
+        - generic [ref=e46]: Print Preview
+      - link "Settings" [ref=e47] [cursor=pointer]:
+        - /url: "#/settings"
+        - img [ref=e48]
+        - generic [ref=e51]: Settings
+    - paragraph [ref=e53]: Payslip Manager v1.0
+  - main [ref=e54]:
+    - generic [ref=e56]:
+      - generic [ref=e57]:
+        - heading "New Payslip" [level=1] [ref=e58]
+        - paragraph [ref=e59]: Create a payslip for an employee
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e64]: Employee Details
+            - generic [ref=e65]:
+              - generic [ref=e66]:
+                - generic [ref=e67]:
+                  - text: Branch
+                  - combobox [ref=e68]:
+                    - generic: IDOL MOTEL
+                    - img [ref=e69]
+                - generic [ref=e71]:
+                  - text: Employee
+                  - combobox [ref=e72]:
+                    - generic: Select employee
+                    - img [ref=e73]
+              - generic [ref=e75]:
+                - generic [ref=e76]:
+                  - generic [ref=e77]: Pay Period Start
+                  - button "March 1st, 2026" [ref=e78]:
+                    - img
+                    - text: March 1st, 2026
+                  - textbox [ref=e79]: 2026-03-01
+                - generic [ref=e80]:
+                  - generic [ref=e81]: Pay Period End
+                  - button "March 15th, 2026" [ref=e82]:
+                    - img
+                    - text: March 15th, 2026
+                  - textbox [ref=e83]: 2026-03-15
+          - generic [ref=e84]:
+            - generic [ref=e86]: Earnings
+            - generic [ref=e88]:
+              - generic [ref=e89]:
+                - text: Rate per Shift (₱)
+                - spinbutton [ref=e90]
+              - generic [ref=e91]:
+                - text: Shifts
+                - spinbutton [ref=e92]
+              - generic [ref=e93]:
+                - text: Overtime (₱)
+                - spinbutton [ref=e94]
+              - generic [ref=e95]:
+                - text: Total Salary
+                - generic [ref=e96]: ₱0.00
+          - generic [ref=e97]:
+            - generic [ref=e99]: Deductions
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e102]:
+                  - generic [ref=e103]: SSS Loan (₱)
+                  - spinbutton [ref=e104]
+                - generic [ref=e105]:
+                  - generic [ref=e106]: Philhealth (₱)
+                  - spinbutton [ref=e107]
+                - generic [ref=e108]:
+                  - generic [ref=e109]: Pag-ibig (₱)
+                  - spinbutton [ref=e110]
+                - generic [ref=e111]:
+                  - generic [ref=e112]: Store (₱)
+                  - spinbutton [ref=e113]
+                - generic [ref=e114]:
+                  - generic [ref=e115]: Cash Advance (₱)
+                  - spinbutton [ref=e116]
+                - generic [ref=e117]:
+                  - generic [ref=e118]: SSS Premium (₱)
+                  - spinbutton [ref=e119]
+                - generic [ref=e120]:
+                  - generic [ref=e121]: Pag-ibig Loan (₱)
+                  - spinbutton [ref=e122]
+                - generic [ref=e123]:
+                  - generic [ref=e124]: Others (₱)
+                  - spinbutton [ref=e125]
+              - generic [ref=e126]:
+                - text: Others Note
+                - textbox "Description for other deductions..." [ref=e127]
+        - generic [ref=e129]:
+          - generic [ref=e130]:
+            - generic [ref=e131]:
+              - img [ref=e132]
+              - text: Payslip Summary
+            - generic [ref=e134]: Auto-calculated from your inputs
+          - generic [ref=e135]:
+            - generic [ref=e136]:
+              - generic [ref=e137]:
+                - generic [ref=e138]: Rate per Shift
+                - generic [ref=e139]: ₱0.00
+              - generic [ref=e140]:
+                - generic [ref=e141]: Shifts
+                - generic [ref=e142]: "0"
+              - generic [ref=e143]:
+                - generic [ref=e144]: Total Salary
+                - generic [ref=e145]: ₱0.00
+            - generic [ref=e146]:
+              - generic [ref=e147]:
+                - generic [ref=e148]: SSS Loan
+                - generic [ref=e149]: "-₱0.00"
+              - generic [ref=e150]:
+                - generic [ref=e151]: Philhealth
+                - generic [ref=e152]: "-₱0.00"
+              - generic [ref=e153]:
+                - generic [ref=e154]: Pag-ibig
+                - generic [ref=e155]: "-₱0.00"
+              - generic [ref=e156]:
+                - generic [ref=e157]: Store
+                - generic [ref=e158]: "-₱0.00"
+              - generic [ref=e159]:
+                - generic [ref=e160]: Cash Advance
+                - generic [ref=e161]: "-₱0.00"
+              - generic [ref=e162]:
+                - generic [ref=e163]: SSS Premium
+                - generic [ref=e164]: "-₱0.00"
+              - generic [ref=e165]:
+                - generic [ref=e166]: Pag-ibig Loan
+                - generic [ref=e167]: "-₱0.00"
+              - generic [ref=e168]:
+                - generic [ref=e169]: Others
+                - generic [ref=e170]: "-₱0.00"
+              - generic [ref=e171]:
+                - generic [ref=e172]: Total Deductions
+                - generic [ref=e173]: "-₱0.00"
+            - generic [ref=e174]:
+              - generic [ref=e175]: Net Salary
+              - generic [ref=e176]: ₱0.00
+            - generic [ref=e177]:
+              - button "Save Payslip" [ref=e178]:
+                - img
+                - text: Save Payslip
+              - button [ref=e179]:
+                - img
+```
