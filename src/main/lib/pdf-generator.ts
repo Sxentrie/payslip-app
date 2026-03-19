@@ -34,13 +34,13 @@ import { writeFileSync } from 'fs'
 
 export async function generatePdf(payslips: PayslipWithDetails[], filePath: string): Promise<void> {
   const doc = new jsPDF()
-  
+
   doc.setFontSize(18)
   doc.text('Payslips Report', 8, 14)
   doc.setFontSize(11)
   doc.text(`Generated on: ${formatDate(new Date().toISOString().split('T')[0])}`, 8, 22)
 
-  const bodyData = payslips.map(p => [
+  const bodyData = payslips.map((p) => [
     p.employee_name,
     p.branch_name,
     `${formatDate(p.pay_period_start)} - ${formatDate(p.pay_period_end)}`,

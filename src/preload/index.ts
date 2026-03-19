@@ -49,8 +49,7 @@ const api: PayslipAPI = {
   deletePayslip: (id) => ipcRenderer.invoke('payslips:delete', id),
   getBatchForPrint: (branchId, periodStart, periodEnd) =>
     ipcRenderer.invoke('payslips:getBatchForPrint', branchId, periodStart, periodEnd),
-  getDistinctPeriods: (branchId) =>
-    ipcRenderer.invoke('payslips:getDistinctPeriods', branchId),
+  getDistinctPeriods: (branchId) => ipcRenderer.invoke('payslips:getDistinctPeriods', branchId),
 
   // Export
   exportPdf: (payslipIds) => ipcRenderer.invoke('export:pdf', payslipIds),

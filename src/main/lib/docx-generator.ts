@@ -26,12 +26,26 @@
  * - generateDocx (async function)
  */
 
-import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, HeadingLevel, WidthType, BorderStyle } from 'docx'
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  Table,
+  TableRow,
+  TableCell,
+  HeadingLevel,
+  WidthType,
+  BorderStyle
+} from 'docx'
 import { writeFileSync } from 'fs'
 import type { PayslipWithDetails } from '../../shared/types'
 import { formatCurrency, formatDate } from '../../shared/calculations'
 
-export async function generateDocx(payslips: PayslipWithDetails[], filePath: string): Promise<void> {
+export async function generateDocx(
+  payslips: PayslipWithDetails[],
+  filePath: string
+): Promise<void> {
   const children: any[] = []
 
   for (let i = 0; i < payslips.length; i++) {
@@ -45,15 +59,12 @@ export async function generateDocx(payslips: PayslipWithDetails[], filePath: str
         spacing: { before: 400, after: 120 }
       }),
       new Paragraph({
-        children: [
-          new TextRun({ text: `Employee: `, bold: true }),
-          new TextRun(p.employee_name),
-        ]
+        children: [new TextRun({ text: `Employee: `, bold: true }), new TextRun(p.employee_name)]
       }),
       new Paragraph({
         children: [
           new TextRun({ text: `Period: `, bold: true }),
-          new TextRun(`${formatDate(p.pay_period_start)} to ${formatDate(p.pay_period_end)}`),
+          new TextRun(`${formatDate(p.pay_period_start)} to ${formatDate(p.pay_period_end)}`)
         ],
         spacing: { after: 200 }
       })
@@ -68,14 +79,20 @@ export async function generateDocx(payslips: PayslipWithDetails[], filePath: str
         left: { style: BorderStyle.SINGLE, size: 1 },
         right: { style: BorderStyle.SINGLE, size: 1 },
         insideHorizontal: { style: BorderStyle.SINGLE, size: 1 },
-        insideVertical: { style: BorderStyle.SINGLE, size: 1 },
+        insideVertical: { style: BorderStyle.SINGLE, size: 1 }
       },
       rows: [
         new TableRow({
           children: [
-            new TableCell({ children: [new Paragraph({ text: "Earnings", style: "Strong" })], width: { size: 50, type: WidthType.PERCENTAGE } }),
-            new TableCell({ children: [new Paragraph({ text: "Deductions", style: "Strong" })], width: { size: 50, type: WidthType.PERCENTAGE } }),
-          ],
+            new TableCell({
+              children: [new Paragraph({ text: 'Earnings', style: 'Strong' })],
+              width: { size: 50, type: WidthType.PERCENTAGE }
+            }),
+            new TableCell({
+              children: [new Paragraph({ text: 'Deductions', style: 'Strong' })],
+              width: { size: 50, type: WidthType.PERCENTAGE }
+            })
+          ]
         }),
         new TableRow({
           children: [
@@ -84,16 +101,28 @@ export async function generateDocx(payslips: PayslipWithDetails[], filePath: str
                 new Paragraph(`Rate per Shift: ${formatCurrency(p.daily_rate)}`),
                 new Paragraph(`Shifts: ${p.days_worked}`),
                 new Paragraph(`Overtime: ${formatCurrency(p.overtime)}`),
-                new Paragraph({ text: `TOTAL: ${formatCurrency(p.total_salary)}`, style: "Strong", spacing: { before: 100 } })
+                new Paragraph({
+                  text: `TOTAL: ${formatCurrency(p.total_salary)}`,
+                  style: 'Strong',
+                  spacing: { before: 100 }
+                })
               ]
             }),
             new TableCell({
               children: [
-                ...(p.custom_deductions ? p.custom_deductions.map(d => new Paragraph(`${d.name}: ${formatCurrency(d.amount)}`)) : []),
+                ...(p.custom_deductions
+                  ? p.custom_deductions.map(
+                      (d) => new Paragraph(`${d.name}: ${formatCurrency(d.amount)}`)
+                    )
+                  : []),
                 ...(p.others_note ? [new Paragraph(`Note: ${p.others_note}`)] : []),
-                new Paragraph({ text: `TOTAL: ${formatCurrency(p.total_deductions)}`, style: "Strong", spacing: { before: 100 } })
+                new Paragraph({
+                  text: `TOTAL: ${formatCurrency(p.total_deductions)}`,
+                  style: 'Strong',
+                  spacing: { before: 100 }
+                })
               ]
-            }),
+            })
           ]
         }),
         new TableRow({
@@ -103,10 +132,10 @@ export async function generateDocx(payslips: PayslipWithDetails[], filePath: str
               children: [
                 new Paragraph({
                   children: [
-                    new TextRun({ text: "NET SALARY: ", bold: true, size: 28 }),
-                    new TextRun({ text: formatCurrency(p.net_salary), bold: true, size: 28 }),
+                    new TextRun({ text: 'NET SALARY: ', bold: true, size: 28 }),
+                    new TextRun({ text: formatCurrency(p.net_salary), bold: true, size: 28 })
                   ],
-                  alignment: "right"
+                  alignment: 'right'
                 })
               ]
             })
@@ -124,14 +153,16 @@ export async function generateDocx(payslips: PayslipWithDetails[], filePath: str
   }
 
   const doc = new Document({
-    sections: [{
-      properties: {
-        page: {
-          margin: { top: 720, right: 720, bottom: 720, left: 720 }
-        }
-      },
-      children
-    }]
+    sections: [
+      {
+        properties: {
+          page: {
+            margin: { top: 720, right: 720, bottom: 720, left: 720 }
+          }
+        },
+        children
+      }
+    ]
   })
 
   const buffer = await Packer.toBuffer(doc)

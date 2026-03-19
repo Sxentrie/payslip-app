@@ -150,16 +150,16 @@ function initializeSchema(db: Database.Database): void {
 
   // Run migrations safely
   const tableInfo = db.prepare(`PRAGMA table_info(payslips)`).all() as any[]
-  
-  if (!tableInfo.find(col => col.name === 'overtime')) {
+
+  if (!tableInfo.find((col) => col.name === 'overtime')) {
     db.exec(`ALTER TABLE payslips ADD COLUMN overtime REAL NOT NULL DEFAULT 0;`)
   }
-  
-  if (!tableInfo.find(col => col.name === 'store')) {
+
+  if (!tableInfo.find((col) => col.name === 'store')) {
     db.exec(`ALTER TABLE payslips ADD COLUMN store REAL NOT NULL DEFAULT 0;`)
   }
-  
-  if (!tableInfo.find(col => col.name === 'custom_deductions')) {
+
+  if (!tableInfo.find((col) => col.name === 'custom_deductions')) {
     db.exec(`ALTER TABLE payslips ADD COLUMN custom_deductions TEXT NOT NULL DEFAULT '[]';`)
   }
 }

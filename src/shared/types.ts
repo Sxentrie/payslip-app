@@ -137,7 +137,7 @@ export interface PayslipAPI {
 
   // Settings
   clearAllData(): Promise<void>
-  
+
   // Deductions
   getDeductionTypes(): Promise<DeductionType[]>
   createDeductionType(name: string): Promise<DeductionType>

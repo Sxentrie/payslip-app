@@ -47,7 +47,12 @@ export function registerEmployeeHandlers(): void {
       const db = getDatabase()
 
       // Input validation
-      if (!data || typeof data.branchId !== 'number' || !Number.isInteger(data.branchId) || data.branchId <= 0) {
+      if (
+        !data ||
+        typeof data.branchId !== 'number' ||
+        !Number.isInteger(data.branchId) ||
+        data.branchId <= 0
+      ) {
         throw new Error('Invalid branch ID')
       }
       if (!data.name || typeof data.name !== 'string' || data.name.trim().length === 0) {
@@ -65,7 +70,7 @@ export function registerEmployeeHandlers(): void {
           .prepare('SELECT * FROM employees WHERE id = ?')
           .get(result.lastInsertRowid) as Employee
       })
-      
+
       return createEmployeeTransaction()
     }
   )
@@ -83,7 +88,8 @@ export function registerEmployeeHandlers(): void {
       if (!current) throw new Error(`Employee ${data.id} not found`)
 
       const name = data.name?.trim() || current.name
-      const position = data.position !== undefined ? (data.position?.trim() || null) : current.position
+      const position =
+        data.position !== undefined ? data.position?.trim() || null : current.position
       const isActive = data.isActive !== undefined ? (data.isActive ? 1 : 0) : current.is_active
 
       const updateEmployeeTransaction = db.transaction(() => {
@@ -95,7 +101,7 @@ export function registerEmployeeHandlers(): void {
         )
         return db.prepare('SELECT * FROM employees WHERE id = ?').get(data.id) as Employee
       })
-      
+
       return updateEmployeeTransaction()
     }
   )

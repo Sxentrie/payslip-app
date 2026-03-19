@@ -32,7 +32,14 @@
  */
 
 import { useState, useEffect, useCallback } from 'react'
-import type { Branch, Employee, PayslipInput, PayslipWithDetails, PayPeriod, DeductionType } from '../../../shared/types'
+import type {
+  Branch,
+  Employee,
+  PayslipInput,
+  PayslipWithDetails,
+  PayPeriod,
+  DeductionType
+} from '../../../shared/types'
 
 // Generic hook for async API calls
 function useApiCall<T>() {

@@ -11,7 +11,11 @@ function waitForDebuggerUrl(proc: ChildProcess, timeout = 15000): Promise<string
     let stderrLog = ''
 
     const timer = setTimeout(() => {
-      reject(new Error(`Timed out waiting for DevTools URL on stderr after ${timeout}ms\n\nStderr log:\n${stderrLog}`))
+      reject(
+        new Error(
+          `Timed out waiting for DevTools URL on stderr after ${timeout}ms\n\nStderr log:\n${stderrLog}`
+        )
+      )
     }, timeout)
 
     proc.stdout?.on('data', (d) => console.log('ELECTRON STDOUT:', d.toString()))
@@ -31,7 +35,11 @@ function waitForDebuggerUrl(proc: ChildProcess, timeout = 15000): Promise<string
     proc.stderr?.on('data', onData)
     proc.on('exit', (code) => {
       clearTimeout(timer)
-      reject(new Error(`Electron exited with code ${code} before DevTools URL was emitted.\n\nStderr log:\n${stderrLog}`))
+      reject(
+        new Error(
+          `Electron exited with code ${code} before DevTools URL was emitted.\n\nStderr log:\n${stderrLog}`
+        )
+      )
     })
   })
 }
@@ -91,7 +99,11 @@ export async function teardownApp(): Promise<void> {
     electronProcess.kill()
     const proc = electronProcess
     setTimeout(() => {
-      try { if (!proc.killed) proc.kill('SIGKILL') } catch { /* ignore */ }
+      try {
+        if (!proc.killed) proc.kill('SIGKILL')
+      } catch {
+        /* ignore */
+      }
     }, 2000)
     electronProcess = null
   }

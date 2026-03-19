@@ -29,7 +29,10 @@ import ExcelJS from 'exceljs'
 import type { PayslipWithDetails } from '../../shared/types'
 import { formatDate } from '../../shared/calculations'
 
-export async function generateXlsx(payslips: PayslipWithDetails[], filePath: string): Promise<void> {
+export async function generateXlsx(
+  payslips: PayslipWithDetails[],
+  filePath: string
+): Promise<void> {
   const workbook = new ExcelJS.Workbook()
   workbook.creator = 'Payslip App'
   workbook.created = new Date()

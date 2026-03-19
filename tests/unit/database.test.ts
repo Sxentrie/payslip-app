@@ -201,20 +201,12 @@ describe('Employees', () => {
     const emp = getRow(db, 'SELECT * FROM employees WHERE name = ?', ['To Delete'])
     expect(emp.is_active).toBe(0)
 
-    const active = allRows(
-      db,
-      'SELECT * FROM employees WHERE branch_id = ? AND is_active = 1',
-      [1]
-    )
+    const active = allRows(db, 'SELECT * FROM employees WHERE branch_id = ? AND is_active = 1', [1])
     expect(active).toHaveLength(0)
   })
 
   it('returns empty array for branch with no employees', () => {
-    const result = allRows(
-      db,
-      'SELECT * FROM employees WHERE branch_id = ? AND is_active = 1',
-      [3]
-    )
+    const result = allRows(db, 'SELECT * FROM employees WHERE branch_id = ? AND is_active = 1', [3])
     expect(result).toEqual([])
   })
 
@@ -311,13 +303,17 @@ describe('Payslips', () => {
 
   it('runs the duplicate guard query successfully without syntax errors', () => {
     insertPayslip({ pay_period_start: '2026-03-01', pay_period_end: '2026-03-15' })
-    const existing = getRow(db, `
+    const existing = getRow(
+      db,
+      `
       SELECT p.id, e.name as employee_name
       FROM payslips p
       JOIN employees e ON p.employee_id = e.id
       WHERE p.employee_id = ? AND p.pay_period_start = ? AND p.pay_period_end = ?
       LIMIT 1
-    `, [1, '2026-03-01', '2026-03-15'])
+    `,
+      [1, '2026-03-01', '2026-03-15']
+    )
     expect(existing).toBeDefined()
     expect(existing.employee_name).toBe('Test Employee')
   })
@@ -371,7 +367,12 @@ describe('Payslips', () => {
   })
 
   it('stores decimal values accurately', () => {
-    insertPayslip({ daily_rate: 456.78, days_worked: 13.5, total_salary: 6166.53, net_salary: 6166.53 })
+    insertPayslip({
+      daily_rate: 456.78,
+      days_worked: 13.5,
+      total_salary: 6166.53,
+      net_salary: 6166.53
+    })
     const payslip = getRow(db, 'SELECT * FROM payslips ORDER BY id DESC LIMIT 1')
     expect(payslip.daily_rate).toBe(456.78)
     expect(payslip.days_worked).toBe(13.5)
@@ -583,7 +584,11 @@ describe('Employee Update', () => {
 
   beforeEach(async () => {
     db = await createTestDatabase()
-    runSql(db, 'INSERT INTO employees (branch_id, name, position) VALUES (?, ?, ?)', [1, 'Juan', 'Frontman'])
+    runSql(db, 'INSERT INTO employees (branch_id, name, position) VALUES (?, ?, ?)', [
+      1,
+      'Juan',
+      'Frontman'
+    ])
   })
 
   it('updates employee name only', () => {

@@ -71,12 +71,12 @@ describe('calculatePayslip', () => {
       days_worked: 15,
       overtime: 0,
       custom_deductions: [
-        {name: 'SSS Premium', amount: 400},
-        {name: 'SSS Loan', amount: 200},
-        {name: 'Philhealth', amount: 300},
-        {name: 'Pagibig', amount: 100},
-        {name: 'Pagibig Loan', amount: 150},
-        {name: 'Others', amount: 50}
+        { name: 'SSS Premium', amount: 400 },
+        { name: 'SSS Loan', amount: 200 },
+        { name: 'Philhealth', amount: 300 },
+        { name: 'Pagibig', amount: 100 },
+        { name: 'Pagibig Loan', amount: 150 },
+        { name: 'Others', amount: 50 }
       ]
     })
     expect(result.total_salary).toBe(9000)
@@ -100,9 +100,9 @@ describe('calculatePayslip', () => {
       days_worked: 13,
       overtime: 0,
       custom_deductions: [
-        {name: 'SSS Premium', amount: 180.5},
-        {name: 'Philhealth', amount: 225.25},
-        {name: 'Pagibig', amount: 100}
+        { name: 'SSS Premium', amount: 180.5 },
+        { name: 'Philhealth', amount: 225.25 },
+        { name: 'Pagibig', amount: 100 }
       ]
     })
     expect(result.total_salary).toBe(5938.14)
@@ -116,12 +116,12 @@ describe('calculatePayslip', () => {
       days_worked: 26,
       overtime: 0,
       custom_deductions: [
-        {name: 'SSS Premium', amount: 580},
-        {name: 'SSS Loan', amount: 1000},
-        {name: 'Philhealth', amount: 250},
-        {name: 'Pagibig', amount: 100},
-        {name: 'Pagibig Loan', amount: 500},
-        {name: 'Others', amount: 200}
+        { name: 'SSS Premium', amount: 580 },
+        { name: 'SSS Loan', amount: 1000 },
+        { name: 'Philhealth', amount: 250 },
+        { name: 'Pagibig', amount: 100 },
+        { name: 'Pagibig Loan', amount: 500 },
+        { name: 'Others', amount: 200 }
       ]
     })
     expect(result.total_salary).toBe(13962)
@@ -147,9 +147,7 @@ describe('calculatePayslip', () => {
       daily_rate: 100,
       days_worked: 1,
       overtime: 0,
-      custom_deductions: [
-        {name: 'SSS Premium', amount: 200}
-      ]
+      custom_deductions: [{ name: 'SSS Premium', amount: 200 }]
     })
     expect(result.total_salary).toBe(100)
     expect(result.total_deductions).toBe(200)
@@ -161,9 +159,7 @@ describe('calculatePayslip', () => {
       daily_rate: 500,
       days_worked: 0,
       overtime: 0,
-      custom_deductions: [
-        {name: 'SSS Premium', amount: 100}
-      ]
+      custom_deductions: [{ name: 'SSS Premium', amount: 100 }]
     })
     expect(result.total_salary).toBe(0)
     expect(result.total_deductions).toBe(100)
@@ -175,9 +171,7 @@ describe('calculatePayslip', () => {
       daily_rate: 500,
       days_worked: 10,
       overtime: 0,
-      custom_deductions: [
-        {name: 'Others', amount: 250}
-      ]
+      custom_deductions: [{ name: 'Others', amount: 250 }]
     })
     expect(result.total_salary).toBe(5000)
     expect(result.total_deductions).toBe(250)

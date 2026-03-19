@@ -26,7 +26,7 @@ This app digitizes the entire payroll cycle:
 1. **Input** — Select a branch, pick an employee, enter daily rate + days worked + deductions
 2. **Calculate** — The engine auto-computes gross salary, total deductions, and net salary
 3. **Store** — Everything is persisted in a local SQLite database (zero cloud dependency)
-4. **Print** — A purpose-built `@media print` layout fits **up to 10 payslips on a single A4 page** (2 columns × 5 rows), with dynamic font sizing that scales from 10pt down to 7.5pt depending on how many payslips are on the page. This directly replaces the wasteful one-slip-per-page approach
+4. **Print** — A purpose-built `@media print` layout fits **up to 9 payslips on a single A4 page** (3 columns × 3 rows), with dynamic font sizing that scales from 9pt down to 7.5pt depending on how many payslips are on the page. This directly replaces the wasteful one-slip-per-page approach
 5. **Export** — Payslips can also be exported as PDF, Microsoft Word (.docx), or Excel (.xlsx) files
 
 ---
@@ -34,31 +34,34 @@ This app digitizes the entire payroll cycle:
 ## 🛠️ Tech Stack
 
 ### Core Runtime
-| Layer | Technology | Purpose |
-|---|---|---|
-| Desktop Shell | **Electron 39** | Cross-platform native window, OS dialogs, print-to-PDF |
-| Frontend | **React 19** + **TypeScript 5.9** | Component UI with type safety |
-| Styling | **Tailwind CSS 4** + **Shadcn UI** (Radix primitives) | Design system with custom components |
-| Database | **better-sqlite3** | Synchronous, embedded SQLite with WAL mode |
-| Routing | **react-router-dom 7** (HashRouter) | Client-side SPA navigation |
-| Build Tool | **electron-vite 5** + **Vite 7** | Fast HMR dev server + production bundler |
+
+| Layer         | Technology                                            | Purpose                                                |
+| ------------- | ----------------------------------------------------- | ------------------------------------------------------ |
+| Desktop Shell | **Electron 39**                                       | Cross-platform native window, OS dialogs, print-to-PDF |
+| Frontend      | **React 19** + **TypeScript 5.9**                     | Component UI with type safety                          |
+| Styling       | **Tailwind CSS 4** + **Shadcn UI** (Radix primitives) | Design system with custom components                   |
+| Database      | **better-sqlite3**                                    | Synchronous, embedded SQLite with WAL mode             |
+| Routing       | **react-router-dom 7** (HashRouter)                   | Client-side SPA navigation                             |
+| Build Tool    | **electron-vite 5** + **Vite 7**                      | Fast HMR dev server + production bundler               |
 
 ### Export Engines (Main Process)
-| Format | Library | Method |
-|---|---|---|
-| PDF (programmatic) | `jspdf` + `jspdf-autotable` | Tabular report via `autoTable(doc, {...})` |
-| PDF (screen-identical) | Electron `printToPDF` | Captures the Print Preview exactly as rendered |
-| Word (.docx) | `docx` | Paragraph + table builder with bold net-salary rows |
-| Excel (.xlsx) | `exceljs` | Styled workbook with PHP currency formatting |
+
+| Format                 | Library                     | Method                                              |
+| ---------------------- | --------------------------- | --------------------------------------------------- |
+| PDF (programmatic)     | `jspdf` + `jspdf-autotable` | Tabular report via `autoTable(doc, {...})`          |
+| PDF (screen-identical) | Electron `printToPDF`       | Captures the Print Preview exactly as rendered      |
+| Word (.docx)           | `docx`                      | Paragraph + table builder with bold net-salary rows |
+| Excel (.xlsx)          | `exceljs`                   | Styled workbook with PHP currency formatting        |
 
 ### Dev & Test
-| Tool | Purpose |
-|---|---|
-| **Vitest 4** | Unit tests (calculations, database schema) |
-| **Playwright 1.58** | E2E tests against the built Electron app |
-| **ESLint 9** + **Prettier 3** | Linting and formatting |
-| **sql.js** | Pure-JS SQLite for unit tests (no native bindings needed) |
-| **electron-builder 26** | NSIS installer packaging for Windows |
+
+| Tool                          | Purpose                                                   |
+| ----------------------------- | --------------------------------------------------------- |
+| **Vitest 4**                  | Unit tests (calculations, database schema)                |
+| **Playwright 1.58**           | E2E tests against the built Electron app                  |
+| **ESLint 9** + **Prettier 3** | Linting and formatting                                    |
+| **sql.js**                    | Pure-JS SQLite for unit tests (no native bindings needed) |
+| **electron-builder 26**       | NSIS installer packaging for Windows                      |
 
 ---
 
@@ -97,7 +100,7 @@ src/
     │   └── globals.css       # Tailwind v4 @import, custom theme, @media print rules
     ├── components/
     │   ├── AppLayout.tsx     # Sidebar + main content wrapper
-    │   ├── PrintLayout.tsx   # A4 print grid (2 cols × 5 rows, page breaks)
+    │   ├── PrintLayout.tsx   # A4 print grid (3 cols × 3 rows, page breaks)
     │   └── ui/               # Shadcn components: button, card, dialog, input,
     │                         #   label, select, separator, table
     ├── hooks/
@@ -184,26 +187,26 @@ All communication between the React renderer and the Node.js main process goes t
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-| Group | Channel | Handler File | Description |
-|---|---|---|---|
-| **Branches** | `branches:getAll` | `ipc/branches.ts` | Returns all 5 branches |
-| | `branches:update` | | Rename a branch |
-| **Employees** | `employees:getByBranch` | `ipc/employees.ts` | Active employees for a branch |
-| | `employees:create` | | Add employee to branch |
-| | `employees:update` | | Edit name/position/active status |
-| | `employees:delete` | | Hard-delete an employee |
-| **Payslips** | `payslips:create` | `ipc/payslips.ts` | Insert new payslip row |
-| | `payslips:getByBranch` | | Filter by branch + optional date range (null = all) |
-| | `payslips:getById` | | Single payslip with JOINed names |
-| | `payslips:delete` | | Hard-delete a payslip |
-| | `payslips:getBatchForPrint` | | Payslips for a branch+period, ordered by employee name |
-| | `payslips:getDistinctPeriods` | | Grouped pay periods per branch with count |
-| **Export** | `export:pdf` | `ipc/export.ts` | Programmatic PDF via jspdf+autoTable |
-| | `export:printPdf` | | Screen-identical PDF via Electron printToPDF |
-| | `export:docx` | | MS Word export via docx library |
-| | `export:xlsx` | | MS Excel export via exceljs library |
-| | `dialog:saveFile` | | Native OS save-file dialog |
-| **Settings** | `settings:clearAllData` | `ipc/settings.ts` | Wipes all tables, resets autoincrement, re-seeds branches |
+| Group         | Channel                       | Handler File       | Description                                               |
+| ------------- | ----------------------------- | ------------------ | --------------------------------------------------------- |
+| **Branches**  | `branches:getAll`             | `ipc/branches.ts`  | Returns all 5 branches                                    |
+|               | `branches:update`             |                    | Rename a branch                                           |
+| **Employees** | `employees:getByBranch`       | `ipc/employees.ts` | Active employees for a branch                             |
+|               | `employees:create`            |                    | Add employee to branch                                    |
+|               | `employees:update`            |                    | Edit name/position/active status                          |
+|               | `employees:delete`            |                    | Hard-delete an employee                                   |
+| **Payslips**  | `payslips:create`             | `ipc/payslips.ts`  | Insert new payslip row                                    |
+|               | `payslips:getByBranch`        |                    | Filter by branch + optional date range (null = all)       |
+|               | `payslips:getById`            |                    | Single payslip with JOINed names                          |
+|               | `payslips:delete`             |                    | Hard-delete a payslip                                     |
+|               | `payslips:getBatchForPrint`   |                    | Payslips for a branch+period, ordered by employee name    |
+|               | `payslips:getDistinctPeriods` |                    | Grouped pay periods per branch with count                 |
+| **Export**    | `export:pdf`                  | `ipc/export.ts`    | Programmatic PDF via jspdf+autoTable                      |
+|               | `export:printPdf`             |                    | Screen-identical PDF via Electron printToPDF              |
+|               | `export:docx`                 |                    | MS Word export via docx library                           |
+|               | `export:xlsx`                 |                    | MS Excel export via exceljs library                       |
+|               | `dialog:saveFile`             |                    | Native OS save-file dialog                                |
+| **Settings**  | `settings:clearAllData`       | `ipc/settings.ts`  | Wipes all tables, resets autoincrement, re-seeds branches |
 
 ### Security Configuration
 
@@ -222,11 +225,11 @@ All IPC handlers validate input arguments at runtime before executing SQL querie
 
 The print system is the most business-critical feature. It is designed to save paper:
 
-- `PrintLayout.tsx` chunks payslips into **pages of 10** (2 columns × 5 rows)
-- Font size scales dynamically: `10pt` (≤4 slips) → `9pt` (≤6) → `8pt` (≤8) → `7.5pt` (≤10)
+- `PrintLayout.tsx` chunks payslips into **pages of 9** (3 columns × 3 rows)
+- Font size scales dynamically: `9pt` (≤3 slips) → `8pt` (≤6) → `7.5pt` (≤9)
 - Each page gets `page-break-after: always` for multi-page printing
-- `globals.css` contains `@media print` rules that hide the sidebar, scrollbars, and neutralize the `flex h-screen` app layout wrapper
-- The "Save as PDF (Identical)" button uses Electron's `webContents.printToPDF()` to capture the exact visual layout with custom A4 margins (0.15in all sides)
+- Tailwind `print:` classes and `globals.css` rules hide the sidebar, scrollbars, and neutralize the `flex h-screen` app layout wrapper
+- The "Save as PDF (Identical)" button uses Electron's `webContents.printToPDF()` to capture the exact visual layout with custom A4 margins (0.1in all sides)
 
 ### Calculation Engine
 
@@ -245,6 +248,7 @@ Currency is formatted as `₱1,234.56` using `Intl.NumberFormat('en-PH', { curre
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js** ≥ 20
 - **pnpm** (recommended; npm/yarn work but lockfile is pnpm)
 - **Windows** for building the .exe installer (cross-compilation is possible but untested)
@@ -294,32 +298,34 @@ npm run test:all
 
 ### All Available Scripts
 
-| Script | Description |
-|---|---|
-| `pnpm dev` | Dev server with HMR |
-| `npm run build` | Typecheck + bundle |
-| `npm run build:win` | Build + package Windows .exe installer |
-| `npm run build:mac` | Build + package macOS .dmg |
-| `npm run build:linux` | Build + package Linux AppImage/deb/snap |
-| `npm run build:unpack` | Build + unpack (no installer, for debugging) |
-| `npm test` | Run Vitest unit tests |
-| `npm run test:e2e` | Build + run Playwright E2E tests |
-| `npm run test:all` | Unit tests + E2E tests sequentially |
-| `npm run test:watch` | Vitest in watch mode |
-| `npm run lint` | ESLint (cached) |
-| `npm run format` | Prettier format all files |
-| `npm run typecheck` | TypeScript check (Node + Web) |
-| `npm start` | Preview production build in Electron (must build first) |
+| Script                 | Description                                             |
+| ---------------------- | ------------------------------------------------------- |
+| `pnpm dev`             | Dev server with HMR                                     |
+| `npm run build`        | Typecheck + bundle                                      |
+| `npm run build:win`    | Build + package Windows .exe installer                  |
+| `npm run build:mac`    | Build + package macOS .dmg                              |
+| `npm run build:linux`  | Build + package Linux AppImage/deb/snap                 |
+| `npm run build:unpack` | Build + unpack (no installer, for debugging)            |
+| `npm test`             | Run Vitest unit tests                                   |
+| `npm run test:e2e`     | Build + run Playwright E2E tests                        |
+| `npm run test:all`     | Unit tests + E2E tests sequentially                     |
+| `npm run test:watch`   | Vitest in watch mode                                    |
+| `npm run lint`         | ESLint (cached)                                         |
+| `npm run format`       | Prettier format all files                               |
+| `npm run typecheck`    | TypeScript check (Node + Web)                           |
+| `npm start`            | Preview production build in Electron (must build first) |
 
 ---
 
 ## 🧪 Test Architecture
 
 ### Unit Tests (`tests/unit/`)
+
 - **`calculations.test.ts`** (29 tests) — `roundTo2`, `calculatePayslip`, `formatCurrency`, `formatDate` with happy/sad/edge paths
 - **`database.test.ts`** (39 tests) — Schema validation, CRUD operations, FK constraints, distinct period queries, batch queries, clear-data + re-seed. Uses `sql.js` (pure JS SQLite) so no native bindings are needed
 
 ### E2E Tests (`tests/e2e/`)
+
 - **`app.spec.ts`** (17 tests) — Full lifecycle in a real Electron window via Playwright:
   - Navigation (sidebar, all 7 pages)
   - Branch management

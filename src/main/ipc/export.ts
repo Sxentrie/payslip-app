@@ -65,8 +65,8 @@ function fetchPayslipsByIds(payslipIds: unknown): PayslipWithDetails[] {
        WHERE p.id IN (${placeholders})`
     )
     .all(...sanitized) as any[]
-    
-  return results.map(row => {
+
+  return results.map((row) => {
     if (row.custom_deductions) {
       row.custom_deductions = JSON.parse(row.custom_deductions)
     } else {

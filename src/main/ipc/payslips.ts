@@ -38,10 +38,18 @@ export function registerPayslipHandlers(): void {
 
     // Input validation
     if (!data) throw new Error('Payslip data is required')
-    if (typeof data.employee_id !== 'number' || !Number.isInteger(data.employee_id) || data.employee_id <= 0) {
+    if (
+      typeof data.employee_id !== 'number' ||
+      !Number.isInteger(data.employee_id) ||
+      data.employee_id <= 0
+    ) {
       throw new Error('Invalid employee ID')
     }
-    if (typeof data.branch_id !== 'number' || !Number.isInteger(data.branch_id) || data.branch_id <= 0) {
+    if (
+      typeof data.branch_id !== 'number' ||
+      !Number.isInteger(data.branch_id) ||
+      data.branch_id <= 0
+    ) {
       throw new Error('Invalid branch ID')
     }
     if (typeof data.daily_rate !== 'number' || data.daily_rate <= 0) {
@@ -105,11 +113,13 @@ export function registerPayslipHandlers(): void {
       const record = db
         .prepare('SELECT * FROM payslips WHERE id = ?')
         .get(result.lastInsertRowid) as any
-        
-      record.custom_deductions = record.custom_deductions ? JSON.parse(record.custom_deductions) : []
+
+      record.custom_deductions = record.custom_deductions
+        ? JSON.parse(record.custom_deductions)
+        : []
       return record as Payslip
     })
-    
+
     return createPayslipTransaction()
   })
 
@@ -124,7 +134,10 @@ export function registerPayslipHandlers(): void {
       const db = getDatabase()
 
       // Validate branchId if provided
-      if (branchId !== null && (typeof branchId !== 'number' || !Number.isInteger(branchId) || branchId <= 0)) {
+      if (
+        branchId !== null &&
+        (typeof branchId !== 'number' || !Number.isInteger(branchId) || branchId <= 0)
+      ) {
         throw new Error('Invalid branch ID')
       }
 
@@ -134,7 +147,7 @@ export function registerPayslipHandlers(): void {
         JOIN employees e ON p.employee_id = e.id
         JOIN branches b ON p.branch_id = b.id
       `
-      
+
       const params: (string | number)[] = []
       const conditions: string[] = []
 
@@ -158,8 +171,8 @@ export function registerPayslipHandlers(): void {
       query += ' ORDER BY p.created_at DESC'
 
       const results = db.prepare(query).all(...params) as any[]
-      
-      return results.map(row => {
+
+      return results.map((row) => {
         if (row.custom_deductions) {
           row.custom_deductions = JSON.parse(row.custom_deductions)
         } else {
@@ -187,13 +200,13 @@ export function registerPayslipHandlers(): void {
       )
       .get(id) as any
     if (!payslip) throw new Error(`Payslip ${id} not found`)
-    
+
     if (payslip.custom_deductions) {
       payslip.custom_deductions = JSON.parse(payslip.custom_deductions)
     } else {
       payslip.custom_deductions = []
     }
-    
+
     return payslip as PayslipWithDetails
   })
 
@@ -231,8 +244,8 @@ export function registerPayslipHandlers(): void {
            ORDER BY e.name`
         )
         .all(branchId, periodStart, periodEnd) as any[]
-        
-      return results.map(row => {
+
+      return results.map((row) => {
         if (row.custom_deductions) {
           row.custom_deductions = JSON.parse(row.custom_deductions)
         } else {

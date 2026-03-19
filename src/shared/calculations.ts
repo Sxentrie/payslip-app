@@ -47,26 +47,26 @@ export interface PayslipCalcResult {
 }
 
 const safeNum = (val: any) => {
-  const n = Number(val);
-  return isNaN(n) ? 0 : n;
-};
+  const n = Number(val)
+  return isNaN(n) ? 0 : n
+}
 
 export function calculatePayslip(input: PayslipCalcInput): PayslipCalcResult {
-  const daily_rate = safeNum(input.daily_rate);
-  const days_worked = safeNum(input.days_worked);
-  const overtime = safeNum(input.overtime);
+  const daily_rate = safeNum(input.daily_rate)
+  const days_worked = safeNum(input.days_worked)
+  const overtime = safeNum(input.overtime)
 
-  const total_salary = roundTo2((daily_rate * days_worked) + overtime);
+  const total_salary = roundTo2(daily_rate * days_worked + overtime)
 
   const deductions_sum = (input.custom_deductions || []).reduce(
     (acc, d) => acc + safeNum(d.amount),
     0
-  );
+  )
 
-  const total_deductions = roundTo2(deductions_sum);
-  const net_salary = roundTo2(total_salary - total_deductions);
+  const total_deductions = roundTo2(deductions_sum)
+  const net_salary = roundTo2(total_salary - total_deductions)
 
-  return { total_salary, total_deductions, net_salary };
+  return { total_salary, total_deductions, net_salary }
 }
 
 export function roundTo2(value: number): number {

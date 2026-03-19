@@ -41,7 +41,7 @@ export function registerDeductionHandlers(): void {
     if (!name || name.trim() === '') {
       throw new Error('Deduction name is required')
     }
-    
+
     // Check if exists (case insensitive)
     const exists = db
       .prepare('SELECT id FROM deduction_types WHERE LOWER(name) = ?')
@@ -50,10 +50,8 @@ export function registerDeductionHandlers(): void {
       throw new Error(`Deduction type "${name.trim()}" already exists`)
     }
 
-    const result = db
-      .prepare('INSERT INTO deduction_types (name) VALUES (?)')
-      .run(name.trim())
-      
+    const result = db.prepare('INSERT INTO deduction_types (name) VALUES (?)').run(name.trim())
+
     return db
       .prepare('SELECT * FROM deduction_types WHERE id = ?')
       .get(result.lastInsertRowid) as DeductionType

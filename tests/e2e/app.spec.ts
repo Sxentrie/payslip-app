@@ -19,21 +19,27 @@ test.beforeAll(async () => {
  * Helper: programmatically set React 19 form state for hidden date inputs.
  */
 async function setReactDate(page: any, dataTestId: string, value: string) {
-  await page.evaluate(({ id, val }) => {
-    const el = document.querySelector(`[data-testid="${id}"]`) as HTMLInputElement
-    if (!el) return
-    
-    // React 16+ tracks the "value" property of inputs. To bypass it:
-    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value")?.set
-    if (nativeInputValueSetter) {
-      nativeInputValueSetter.call(el, val)
-    } else {
-      el.value = val
-    }
-    
-    el.dispatchEvent(new Event('input', { bubbles: true }))
-    el.dispatchEvent(new Event('change', { bubbles: true }))
-  }, { id: dataTestId, val: value })
+  await page.evaluate(
+    ({ id, val }) => {
+      const el = document.querySelector(`[data-testid="${id}"]`) as HTMLInputElement
+      if (!el) return
+
+      // React 16+ tracks the "value" property of inputs. To bypass it:
+      const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+        window.HTMLInputElement.prototype,
+        'value'
+      )?.set
+      if (nativeInputValueSetter) {
+        nativeInputValueSetter.call(el, val)
+      } else {
+        el.value = val
+      }
+
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      el.dispatchEvent(new Event('change', { bubbles: true }))
+    },
+    { id: dataTestId, val: value }
+  )
 }
 
 /**
@@ -41,25 +47,25 @@ async function setReactDate(page: any, dataTestId: string, value: string) {
  */
 async function selectFromDropdown(page: any, trigger: any, optionText: string) {
   await expect(trigger).toBeEnabled({ timeout: 15000 })
-  
+
   // Wait for any async loading to settle
   await expect(trigger).not.toHaveText(/Loading/, { timeout: 15000 })
-  
+
   // Click the trigger to open the portal
   await trigger.click({ force: true })
   await page.waitForTimeout(500)
 
-  // Robust Selection Strategy: Try searching for the option role, 
+  // Robust Selection Strategy: Try searching for the option role,
   // but also try typing and pressing Enter as a fallback for Radix/Shadcn Comboboxes.
   const option = page.getByRole('option', { name: optionText, exact: true })
-  
+
   try {
     if (!(await option.isVisible())) {
-       // Keyboard Fallback: If option isn't immediately visible, type the name
-       await page.keyboard.type(optionText)
-       await page.waitForTimeout(300)
+      // Keyboard Fallback: If option isn't immediately visible, type the name
+      await page.keyboard.type(optionText)
+      await page.waitForTimeout(300)
     }
-    
+
     // Press Enter to select the highlighted option (or click if visible)
     if (await option.isVisible()) {
       await option.click({ force: true })
@@ -73,7 +79,7 @@ async function selectFromDropdown(page: any, trigger: any, optionText: string) {
 
   // Wait for the dropdown to close
   await page.waitForTimeout(300)
-  
+
   // POSITIVE SYNC: Wait for the trigger to reflect the selected ID in its data attribute
   await expect(trigger).not.toHaveAttribute('data-selected-id', '', { timeout: 10000 })
 }
@@ -88,14 +94,118 @@ test.afterAll(async () => {
 
 // Realistic Roster configuration
 const EMPLOYEES = [
-  { name: 'Jason Jamora', position: 'Frontman', rate: '426', days: '15', overtime: '1500', sss: '450', loan: '0', phil: '200', pagibig: '100', pl: '0', others: '0', store: '0' },
-  { name: 'Joie Antugon', position: 'Roomboy', rate: '426', days: '14.5', overtime: '0', sss: '0', loan: '0', phil: '100', pagibig: '50', pl: '0', others: '20', store: '200' },
-  { name: 'Arvin Reyes', position: 'Roomboy', rate: '426', days: '15', overtime: '200', sss: '450', loan: '100', phil: '200', pagibig: '100', pl: '0', others: '0', store: '50.50' },
-  { name: 'Bernadette Ganduhao', position: 'Roomgirl', rate: '426', days: '13', overtime: '0', sss: '200', loan: '0', phil: '100', pagibig: '100', pl: '50', others: '50', store: '0' },
-  { name: 'Cherry Mae Galon', position: 'Cashier', rate: '526', days: '15', overtime: '800', sss: '450', loan: '0', phil: '250', pagibig: '100', pl: '0', others: '0', store: '100' },
-  { name: 'Roselyn Mahasol', position: 'Cashier', rate: '526', days: '15', overtime: '0', sss: '450', loan: '200', phil: '250', pagibig: '100', pl: '0', others: '0', store: '0' },
-  { name: 'Kate Lynne Villanueva', position: 'Cashier', rate: '526', days: '12', overtime: '0', sss: '450', loan: '0', phil: '250', pagibig: '100', pl: '0', others: '0', store: '0' },
-  { name: 'Manong Juan', position: 'Maintenance', rate: '526', days: '15', overtime: '500', sss: '450', loan: '0', phil: '200', pagibig: '100', pl: '100', others: '200', store: '1000' },
+  {
+    name: 'Jason Jamora',
+    position: 'Frontman',
+    rate: '426',
+    days: '15',
+    overtime: '1500',
+    sss: '450',
+    loan: '0',
+    phil: '200',
+    pagibig: '100',
+    pl: '0',
+    others: '0',
+    store: '0'
+  },
+  {
+    name: 'Joie Antugon',
+    position: 'Roomboy',
+    rate: '426',
+    days: '14.5',
+    overtime: '0',
+    sss: '0',
+    loan: '0',
+    phil: '100',
+    pagibig: '50',
+    pl: '0',
+    others: '20',
+    store: '200'
+  },
+  {
+    name: 'Arvin Reyes',
+    position: 'Roomboy',
+    rate: '426',
+    days: '15',
+    overtime: '200',
+    sss: '450',
+    loan: '100',
+    phil: '200',
+    pagibig: '100',
+    pl: '0',
+    others: '0',
+    store: '50.50'
+  },
+  {
+    name: 'Bernadette Ganduhao',
+    position: 'Roomgirl',
+    rate: '426',
+    days: '13',
+    overtime: '0',
+    sss: '200',
+    loan: '0',
+    phil: '100',
+    pagibig: '100',
+    pl: '50',
+    others: '50',
+    store: '0'
+  },
+  {
+    name: 'Cherry Mae Galon',
+    position: 'Cashier',
+    rate: '526',
+    days: '15',
+    overtime: '800',
+    sss: '450',
+    loan: '0',
+    phil: '250',
+    pagibig: '100',
+    pl: '0',
+    others: '0',
+    store: '100'
+  },
+  {
+    name: 'Roselyn Mahasol',
+    position: 'Cashier',
+    rate: '526',
+    days: '15',
+    overtime: '0',
+    sss: '450',
+    loan: '200',
+    phil: '250',
+    pagibig: '100',
+    pl: '0',
+    others: '0',
+    store: '0'
+  },
+  {
+    name: 'Kate Lynne Villanueva',
+    position: 'Cashier',
+    rate: '526',
+    days: '12',
+    overtime: '0',
+    sss: '450',
+    loan: '0',
+    phil: '250',
+    pagibig: '100',
+    pl: '0',
+    others: '0',
+    store: '0'
+  },
+  {
+    name: 'Manong Juan',
+    position: 'Maintenance',
+    rate: '526',
+    days: '15',
+    overtime: '500',
+    sss: '450',
+    loan: '0',
+    phil: '200',
+    pagibig: '100',
+    pl: '100',
+    others: '200',
+    store: '1000'
+  }
 ]
 
 test.describe.serial('Navigation', () => {
@@ -129,7 +239,7 @@ test.describe.serial('Branches Management', () => {
     await expect(page.locator('td:has-text("HAPPYNEST MOTEL")')).toBeVisible()
     await expect(page.locator('td:has-text("OTHERS")')).toBeVisible()
   })
-  
+
   test('can inline-edit a branch name back and forth', async () => {
     const row = page.locator('tr', { hasText: 'OTHERS' })
     await row.locator('button').first().click()
@@ -157,9 +267,9 @@ test.describe.serial('Employee Management', () => {
 
   test('Add realistic employee roster', async () => {
     test.setTimeout(60000)
-    await page.evaluate(() => window.location.hash = '#/employees')
+    await page.evaluate(() => (window.location.hash = '#/employees'))
     await page.waitForTimeout(500)
-    
+
     // Select Branch
     await selectFromDropdown(page, page.getByRole('combobox'), 'IDOL MOTEL')
     await expect(page.locator('text=No employees yet')).toBeVisible()
@@ -168,12 +278,12 @@ test.describe.serial('Employee Management', () => {
       await page.click('button:has-text("Add Employee")')
       await page.fill('input[placeholder="Employee name"]', emp.name)
       await page.fill('input[placeholder*="Front Desk"]', emp.position)
-      
+
       // Wait for Add to be enabled then click
       const addBtn = page.locator('button:has-text("Add"):not(:has-text("Employee"))')
       await expect(addBtn).toBeEnabled()
       await addBtn.click()
-      
+
       // Verify persistence in table before next loop
       await expect(page.locator(`td:has-text("${emp.name}")`)).toBeVisible()
     }
@@ -190,15 +300,15 @@ test.describe.serial('Payslip Creation Lifecycle', () => {
 
   test('Create realistic payslips for the entire roster', async () => {
     test.setTimeout(180000)
-    
+
     // Start fresh: reload the page once
     await page.reload()
-    await page.evaluate(() => window.location.hash = '#/new-payslip')
+    await page.evaluate(() => (window.location.hash = '#/new-payslip'))
     await page.waitForTimeout(1000)
 
     // Branch selection (done once)
     const branchTrigger = page.getByRole('combobox').first()
-    await selectFromDropdown(page, branchTrigger, "IDOL MOTEL")
+    await selectFromDropdown(page, branchTrigger, 'IDOL MOTEL')
 
     // The trigger should show "Select employee"
     const employeeTrigger = page.locator('#employee-select-trigger')
@@ -215,7 +325,7 @@ test.describe.serial('Payslip Creation Lifecycle', () => {
 
       // Use the generic number input selector for strict indexing
       const allNum = page.locator('input[type="number"]')
-      
+
       // Earnings (0: rate, 1: days, 2: overtime)
       await allNum.nth(0).fill(emp.rate)
       await allNum.nth(1).fill(emp.days)
@@ -235,14 +345,14 @@ test.describe.serial('Payslip Creation Lifecycle', () => {
 
       // Save
       await page.click('button:has-text("Save Payslip")', { force: true })
-      
+
       // Wait for success toast
       const toast = page.locator('text=Payslip saved successfully')
       await expect(toast).toBeVisible({ timeout: 15000 })
-      
+
       // Wait for toast to disappear before next iteration
       await toast.waitFor({ state: 'hidden', timeout: 5000 })
-      
+
       // App auto-resets employee but preserves branch and dates
       await expect(employeeTrigger).toHaveText(/Select employee/)
     }
@@ -256,7 +366,7 @@ test.describe.serial('Payslip Log & Dashboard', () => {
     await page.locator('[role="option"]:has-text("IDOL MOTEL")').click()
 
     await expect(page.locator(`text=${EMPLOYEES.length} Payslips Found`)).toBeVisible()
-    
+
     for (const emp of EMPLOYEES) {
       await expect(page.locator(`td:has-text("${emp.name}")`)).toBeVisible()
     }
@@ -266,10 +376,10 @@ test.describe.serial('Payslip Log & Dashboard', () => {
     const firstEmp = EMPLOYEES[0]
     const row = page.locator('tr', { hasText: firstEmp.name })
     await row.locator('button').last().click()
-    
+
     // Cancel deletion
     await page.locator('[role="dialog"] button:has-text("Cancel")').click()
-    
+
     // Ensure the record persists
     await expect(page.locator(`td:has-text("${firstEmp.name}")`)).toBeVisible()
     await expect(page.locator(`text=${EMPLOYEES.length} Payslips Found`)).toBeVisible()
@@ -277,9 +387,11 @@ test.describe.serial('Payslip Log & Dashboard', () => {
 
   test('Dashboard reflects the total realistic roster', async () => {
     await page.click('a:has-text("Dashboard")')
-    
+
     // Explicitly target the stat card content using the unique description text
-    const totalPayslipsStat = page.locator('div:has(> p:has-text("Generated payslips"))').locator('.text-2xl')
+    const totalPayslipsStat = page
+      .locator('div:has(> p:has-text("Generated payslips"))')
+      .locator('.text-2xl')
     await expect(totalPayslipsStat).toHaveText(EMPLOYEES.length.toString())
   })
 })
@@ -340,10 +452,10 @@ test.describe.serial('Multi-Branch Lifecycle', () => {
     await expect(page.locator('td:has-text("Maria Santos")')).toBeVisible()
 
     // Step 2: Create payslip for Maria Santos in BULLSEYE
-    await page.evaluate(() => window.location.hash = '#/new-payslip')
+    await page.evaluate(() => (window.location.hash = '#/new-payslip'))
     await page.waitForTimeout(500)
-    await selectFromDropdown(page, page.getByRole('combobox').first(), "BULLSEYE MOTEL")
-    await selectFromDropdown(page, page.getByRole('combobox').nth(1), "Maria Santos")
+    await selectFromDropdown(page, page.getByRole('combobox').first(), 'BULLSEYE MOTEL')
+    await selectFromDropdown(page, page.getByRole('combobox').nth(1), 'Maria Santos')
 
     await setReactDate(page, 'pay-period-start', '2026-03-01')
     await setReactDate(page, 'pay-period-end', '2026-03-15')
@@ -368,11 +480,12 @@ test.describe.serial('Multi-Branch Lifecycle', () => {
 
     // Step 3: Verify Dashboard shows all payslips (8 IDOL + 1 BULLSEYE = 9)
     await page.click('a:has-text("Dashboard")')
-    const totalPayslipsStat = page.locator('div:has(> p:has-text("Generated payslips"))').locator('.text-2xl')
+    const totalPayslipsStat = page
+      .locator('div:has(> p:has-text("Generated payslips"))')
+      .locator('.text-2xl')
     await expect(totalPayslipsStat).toHaveText('9')
   })
 })
-
 
 test.describe.serial('Settings - Clear Data', () => {
   test('clear all realistic data successfully', async () => {
@@ -391,7 +504,9 @@ test.describe.serial('Settings - Clear Data', () => {
 
   test('data genuinely cleared from dashboard', async () => {
     await page.click('a:has-text("Dashboard")')
-    const totalPayslipsStat = page.locator('div:has(> p:has-text("Generated payslips"))').locator('.text-2xl')
+    const totalPayslipsStat = page
+      .locator('div:has(> p:has-text("Generated payslips"))')
+      .locator('.text-2xl')
     await expect(totalPayslipsStat).toHaveText('0')
   })
 
@@ -418,12 +533,12 @@ test.describe.serial('Sad Paths & Error States', () => {
     await page.click('a:has-text("Employees")')
     await page.locator('[role="combobox"]').click()
     await page.locator('[role="option"]:has-text("IDOL MOTEL")').click()
-    
+
     await page.click('button:has-text("Add Employee")')
     // Add button should be disabled because the name is empty
     const addBtn = page.locator('button:has-text("Add"):not(:has-text("Employee"))')
     await expect(addBtn).toBeDisabled()
-    
+
     // Close the dialog to prevent overlay from blocking subsequent tests
     await page.keyboard.press('Escape')
     await expect(page.locator('text=Add Employee').first()).toBeVisible()
@@ -451,20 +566,20 @@ test.describe.serial('Sad Paths & Error States', () => {
     }
 
     // Now navigate to New Payslip and run the negative salary test
-    await page.evaluate(() => window.location.hash = '#/new-payslip')
+    await page.evaluate(() => (window.location.hash = '#/new-payslip'))
     await page.waitForTimeout(500)
-    
-    await selectFromDropdown(page, page.getByRole('combobox').first(), "IDOL MOTEL")
+
+    await selectFromDropdown(page, page.getByRole('combobox').first(), 'IDOL MOTEL')
     // Wait for employee list to load after branch selection
     await page.waitForTimeout(1000)
     // Select first employee
-    await selectFromDropdown(page, page.getByRole('combobox').nth(1), "Jason Jamora")
+    await selectFromDropdown(page, page.getByRole('combobox').nth(1), 'Jason Jamora')
 
     await setReactDate(page, 'pay-period-start', '2026-03-01')
     await setReactDate(page, 'pay-period-end', '2026-03-15')
 
     const allNum = page.locator('input[type="number"]')
-    
+
     // Base salary of 0, Store deduction of 500 = Negative
     await allNum.nth(0).fill('0') // Rate
     await allNum.nth(1).fill('0') // Shifts
@@ -478,4 +593,3 @@ test.describe.serial('Sad Paths & Error States', () => {
     await expect(netSalaryText).toContainText('500.00', { timeout: 5000 })
   })
 })
-
